@@ -174,7 +174,7 @@ public class CraftSlimeWorld implements SlimeWorld {
             writeBitSetAsBytes(outStream, chunkBitset, chunkMaskSize);
 
             // Chunks
-            byte[] chunkData = serializeChunks(sortedChunks, version);
+            byte[] chunkData = serializeChunks(sortedChunks);
             byte[] compressedChunkData = Zstd.compress(chunkData);
 
             outStream.writeInt(compressedChunkData.length);
@@ -246,29 +246,19 @@ public class CraftSlimeWorld implements SlimeWorld {
         }
     }
 
-    private static byte[] serializeChunks(List<SlimeChunk> chunks, byte worldVersion) throws IOException {
+    private static byte[] serializeChunks(List<SlimeChunk> chunks) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream(16384);
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
         for (SlimeChunk chunk : chunks) {
             // Height Maps
-            if (worldVersion >= 0x04) {
-                byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
-                outStream.writeInt(heightMaps.length);
-                outStream.write(heightMaps);
-            } else {
-                int[] heightMap = chunk.getHeightMaps().getIntArrayValue("heightMap").get();
-
-                for (int i = 0; i < 256; i++) {
-                    outStream.writeInt(heightMap[i]);
-                }
-            }
+            byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
+            outStream.writeInt(heightMaps.length);
+            outStream.write(heightMaps);
 
             // Biomes
             int[] biomes = chunk.getBiomes();
-            if (worldVersion >= 0x04) {
-                outStream.writeInt(biomes.length);
-            }
+            outStream.writeInt(biomes.length);
 
             for (int biome : biomes) {
                 outStream.writeInt(biome);
@@ -276,7 +266,7 @@ public class CraftSlimeWorld implements SlimeWorld {
 
             // Chunk sections
             SlimeChunkSection[] sections = chunk.getSections();
-            BitSet sectionBitmask = new BitSet(16);
+            BitSet sectionBitmask = new BitSet(sections.length);
 
             for (int i = 0; i < sections.length; i++) {
                 sectionBitmask.set(i, sections[i] != null);
@@ -297,30 +287,24 @@ public class CraftSlimeWorld implements SlimeWorld {
                     outStream.write(section.getBlockLight().getBacking());
                 }
 
-                // Block Data
-                if (worldVersion >= 0x04) {
-                    // Palette
-                    List<CompoundTag> palette = section.getPalette().getValue();
-                    outStream.writeInt(palette.size());
+                // Palette
+                List<CompoundTag> palette = section.getPalette().getValue();
+                outStream.writeInt(palette.size());
 
-                    for (CompoundTag value : palette) {
-                        byte[] serializedValue = serializeCompoundTag(value);
+                for (CompoundTag value : palette) {
+                    byte[] serializedValue = serializeCompoundTag(value);
 
-                        outStream.writeInt(serializedValue.length);
-                        outStream.write(serializedValue);
-                    }
+                    outStream.writeInt(serializedValue.length);
+                    outStream.write(serializedValue);
+                }
 
-                    // Block states
-                    long[] blockStates = section.getBlockStates();
+                // Block states
+                long[] blockStates = section.getBlockStates();
 
-                    outStream.writeInt(blockStates.length);
+                outStream.writeInt(blockStates.length);
 
-                    for (long value : section.getBlockStates()) {
-                        outStream.writeLong(value);
-                    }
-                } else {
-                    outStream.write(section.getBlocks());
-                    outStream.write(section.getData().getBacking());
+                for (long value : section.getBlockStates()) {
+                    outStream.writeLong(value);
                 }
 
                 // Sky Light

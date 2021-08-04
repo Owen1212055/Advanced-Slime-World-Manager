@@ -45,6 +45,64 @@
     inside an nbt list named “maps”, in a global compound, no gzip anywhere
     compressed using zstd
 -------------------------------------
+v10
+
+Custom chunk format
+
+4 bytes (int) - heightmaps size
+  <array of heightmap nbt compounds>
+    same format as mc, uncompressed
+
+4 bytes (int) - biome array size
+  <array of biomes (ints)>
+
+1 byte - section count
+[depends] - sections bitmask
+  -> each section is 1 bit: 0 if all air (missing), 1 if present
+  -> bottom to top
+  -> size is ceil(section count / 8) bytes
+  -> the last byte has unused bits on the right
+ 1 byte (boolean) - has block light
+ [if has block light]
+   2048 bytes - block light
+   4 bytes (int) - block palette array size
+    <array of block palette nbt compounds>
+    same format as mc, without being inside a global compound
+   4 bytes (int) - block state array size
+    <array of block states (longs)>
+ 1 byte (boolean) - has sky light
+ [if has sky light]
+     2048 bytes - sky light
+   For each section
+
+-------------------------------------
+
+World version list:
+ - 1: 1.8 world
+ - 2: 1.9 world
+ - 3: 1.11 world
+ - 4: 1.13 world
+ - 5: 1.14 world
+ - 6: 1.16 world
+ - 7: 1.17 world
+
+-------------------------------------
+
+Version history:
+ - v1: Initial release.
+ - v2: Added "extra" nbt tag for per-world custom data.
+ - v3: Added entities storage.
+ - v4: Added support for 1.13 worlds and removed HypixelBlocks3.
+ - v5: Skylight and blocklight might not always be present.
+ - v6: Added world versioning
+ - v7: Added world maps
+ - v8: Variable biomes size
+ - v9: Fix issue with biomes size, causing old worlds to be corrupted
+ - v10: Support for custom chunk section sizes
+
+
+-------------------------------------
+v1-v9
 
 Custom chunk format
 [if world mc version is 1.13 or newer]
@@ -75,25 +133,3 @@ Custom chunk format
   For each section
 
 -------------------------------------
-
-World version list:
- - 1: 1.8 world
- - 2: 1.9 world
- - 3: 1.11 world
- - 4: 1.13 world
- - 5: 1.14 world
- - 6: 1.16 world
- - 7: 1.17 world
-
--------------------------------------
-
-Version history:
- - v1: Initial release.
- - v2: Added "extra" nbt tag for per-world custom data.
- - v3: Added entities storage.
- - v4: Added support for 1.13 worlds and removed HypixelBlocks3.
- - v5: Skylight and blocklight might not always be present.
- - v6: Added world versioning
- - v7: Added world maps
- - v8: Variable biomes size
- - v9: Fix issue with biomes size, causing old worlds to be corrupted
