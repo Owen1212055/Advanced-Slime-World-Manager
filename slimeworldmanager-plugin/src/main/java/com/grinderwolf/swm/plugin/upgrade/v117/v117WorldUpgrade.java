@@ -18,6 +18,10 @@ public class v117WorldUpgrade implements Upgrade {
     public void upgrade(CraftSlimeWorld world) {
         for (SlimeChunk chunk : new ArrayList<>(world.getChunks().values())) {
             for (SlimeChunkSection section : chunk.getSections()) {
+                if (section == null) {
+                    continue;
+                }
+
                 List<CompoundTag> palette = section.getPalette().getValue();
 
                 for (CompoundTag blockTag : palette) {
