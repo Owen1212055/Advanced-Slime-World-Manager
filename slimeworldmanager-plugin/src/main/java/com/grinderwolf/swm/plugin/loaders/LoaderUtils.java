@@ -1,12 +1,17 @@
 package com.grinderwolf.swm.plugin.loaders;
 
+import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
+import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
+import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
 import com.grinderwolf.swm.plugin.loaders.file.FileLoader;
 import com.grinderwolf.swm.plugin.loaders.mongo.MongoLoader;
 import com.grinderwolf.swm.plugin.loaders.mysql.MysqlLoader;
 import com.grinderwolf.swm.plugin.loaders.redis.RedisLoader;
+import com.grinderwolf.swm.plugin.loaders.slime.SlimeWorldReaderRegistry;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
 import io.lettuce.core.RedisException;
@@ -98,4 +103,9 @@ public class LoaderUtils {
         loaderMap.put(dataSource, loader);
     }
 
+    @Deprecated(since = "2.6.2", forRemoval = true)
+    public static CraftSlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimePropertyMap propertyMap, boolean readOnly)
+            throws IOException, CorruptedWorldException, NewerFormatException {
+        return SlimeWorldReaderRegistry.readWorld(loader, worldName, serializedWorld, propertyMap, readOnly);
+    }
 }
