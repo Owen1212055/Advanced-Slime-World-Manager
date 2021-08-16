@@ -84,7 +84,12 @@
                     org.bukkit.generator.ChunkGenerator gen = $0.server.getGenerator(name);
                     net.minecraft.core.IRegistryCustom.Dimension iregistrycustom_dimension = $0.l;
 
-                    boolean fieldIsValid = net.minecraft.server.MinecraftServer.class.getField("aC") != null;
+                    boolean fieldIsValid = false;
+                    try {
+                    net.minecraft.server.MinecraftServer.class.getField("aC");
+                    fieldIsValid = true;
+                    } catch (java.lang.Exception exception) {
+                    }
 
                     net.minecraft.resources.RegistryReadOps registryreadops;
                     if (fieldIsValid) {
@@ -106,6 +111,7 @@
                         } else {
                             net.minecraft.server.dedicated.DedicatedServerProperties dedicatedserverproperties = ((net.minecraft.server.dedicated.DedicatedServer)$0).getDedicatedServerProperties();
                             worldsettings = new net.minecraft.world.level.WorldSettings(dedicatedserverproperties.p, dedicatedserverproperties.o, dedicatedserverproperties.z, dedicatedserverproperties.n, false, new net.minecraft.world.level.GameRules(), $0.datapackconfiguration);
+
 
                             fieldIsValid = net.minecraft.server.dedicated.DedicatedServerProperties.class.getField("Y") != null;
 
@@ -156,7 +162,12 @@
                     net.minecraft.resources.ResourceKey worldKey = net.minecraft.resources.ResourceKey.a(net.minecraft.core.IRegistry.Q, dimensionKey.a());
                     net.minecraft.server.level.progress.WorldLoadListener worldloadlistener = $0.L.create(11);
 
-                    fieldIsValid = net.minecraft.server.dedicated.DedicatedServerProperties.class.getField("aA") != null;
+                    fieldIsValid = false;
+                    try {
+                    net.minecraft.server.dedicated.DedicatedServerProperties.class.getField("aA");
+                    fieldIsValid = true;
+                    } catch (java.lang.Exception exception) {
+                    }
 
                     if (worldId == 0) {
                         if (fieldIsValid) {
@@ -184,9 +195,9 @@
                     $0.server.scoreboardManager = new org.bukkit.craftbukkit.v1_17_R1.scoreboard.CraftScoreboardManager($0, world.getScoreboard());
 
                     if (org.bukkit.Bukkit.getUnsafe().getDataVersion() == 2730) {
-                     getClass().getDeclaredField("at").set(this, new net.minecraft.world.level.storage.PersistentCommandStorage(worldpersistentdata));
+                     net.minecraft.server.MinecraftServer.class.getDeclaredField("at").set(this, new net.minecraft.world.level.storage.PersistentCommandStorage(worldpersistentdata));
                     } else {
-                     getClass().getDeclaredField("au").set(this, new net.minecraft.world.level.storage.PersistentCommandStorage(worldpersistentdata));
+                     net.minecraft.server.MinecraftServer.class.getDeclaredField("au").set(this, new net.minecraft.world.level.storage.PersistentCommandStorage(worldpersistentdata));
                     }
                 }
 
