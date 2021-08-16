@@ -112,7 +112,7 @@
                             if (fieldIsValid) {
                                 generatorsettings = $0.options.has("bonusChest") ? ((net.minecraft.world.level.levelgen.GeneratorSettings) net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredField("Y").get(dedicatedserverproperties)).j() : ((net.minecraft.world.level.levelgen.GeneratorSettings) net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredField("Y").get(dedicatedserverproperties));
                             } else {
-                                generatorsettings = $0.options.has("bonusChest") ? ((net.minecraft.world.level.levelgen.GeneratorSettings) net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredMethod("a", net.minecraft.core.IRegistryCustom.class).invoke(dedicatedserverproperties, (net.minecraft.core.IRegistryCustom.Dimension) net.minecraft.server.MinecraftServer.class.getDeclaredField("l").get($0))).j() : ((net.minecraft.world.level.levelgen.GeneratorSettings)net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredMethod("a", net.minecraft.core.IRegistryCustom.class).invoke(dedicatedserverproperties, (net.minecraft.core.IRegistryCustom.Dimension) net.minecraft.server.MinecraftServer.class.getDeclaredField("l").get($0)));
+                                generatorsettings = $0.options.has("bonusChest") ? ((net.minecraft.world.level.levelgen.GeneratorSettings) net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredMethod("a", new java.lang.Class[]{net.minecraft.core.IRegistryCustom.class}).invoke(dedicatedserverproperties, new java.lang.Object[]{(net.minecraft.core.IRegistryCustom.Dimension) net.minecraft.server.MinecraftServer.class.getDeclaredField("l").get($0)})).j() : ((net.minecraft.world.level.levelgen.GeneratorSettings)net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredMethod("a", new java.lang.Class[]{net.minecraft.core.IRegistryCustom.class}).invoke(dedicatedserverproperties, new Object[]{(net.minecraft.core.IRegistryCustom.Dimension) net.minecraft.server.MinecraftServer.class.getDeclaredField("l").get($0)}));
                             }
 
                         }
@@ -182,7 +182,12 @@
                     net.minecraft.world.level.storage.WorldPersistentData worldpersistentdata = world.getWorldPersistentData();
                     $0.initializeScoreboards(worldpersistentdata);
                     $0.server.scoreboardManager = new org.bukkit.craftbukkit.v1_17_R1.scoreboard.CraftScoreboardManager($0, world.getScoreboard());
-                    $0.au = new net.minecraft.world.level.storage.PersistentCommandStorage(worldpersistentdata);
+
+                    if (org.bukkit.Bukkit.getUnsafe().getDataVersion() == 2730) {
+                     getClass().getDeclaredField("at").set(this, new net.minecraft.world.level.storage.PersistentCommandStorage(worldpersistentdata));
+                    } else {
+                     getClass().getDeclaredField("au").set(this, new net.minecraft.world.level.storage.PersistentCommandStorage(worldpersistentdata));
+                    }
                 }
 
                 worlddata.a($0.getServerModName(), $0.getModded().isPresent());
