@@ -12,6 +12,7 @@ import java.util.*;
 public class v118WorldUpgrade implements Upgrade {
 
     private static final String[] BIOMES_BY_ID = new String[256]; // rip datapacks
+
     static {
         BIOMES_BY_ID[0] = "minecraft:ocean";
         BIOMES_BY_ID[1] = "minecraft:plains";
@@ -153,14 +154,8 @@ public class v118WorldUpgrade implements Upgrade {
                     continue;
                 }
 
-                CompoundMap map = new CompoundMap();
-                map.put(new LongArrayTag("data", section.getBlockStates()));
-                map.put("palette", section.getPalette());
-
-
-                ((CraftSlimeChunkSection) section).setBlockStatesTag(new CompoundTag("", map));
+                ((CraftSlimeChunkSection) section).setBlockStatesTag(wrapPalette(section.getPalette(), section.getBlockStates()));
                 ((CraftSlimeChunkSection) section).setBiomeTag(tags[section.getSectionIndex()]);
-
             }
         }
     }
@@ -216,7 +211,7 @@ public class v118WorldUpgrade implements Upgrade {
         }
 
         List<StringTag> paletteString = new ArrayList<>();
-        for (final IntIterator iterator = paletteId.keySet().iterator(); iterator.hasNext();) {
+        for (final IntIterator iterator = paletteId.keySet().iterator(); iterator.hasNext(); ) {
             final int biomeId = iterator.nextInt();
             String biome = biomeId >= 0 && biomeId < BIOMES_BY_ID.length ? BIOMES_BY_ID[biomeId] : null;
             String update = BIOME_UPDATE.get(biome);
@@ -243,7 +238,7 @@ public class v118WorldUpgrade implements Upgrade {
         for (int biome_idx = 0; biome_idx < 64; ++biome_idx) {
             final int biome = biomes[offset + (biome_idx & mask)];
 
-            curr |= ((long)paletteId.get(biome)) << shift;
+            curr |= ((long) paletteId.get(biome)) << shift;
 
             shift += bitsPerObject;
 
