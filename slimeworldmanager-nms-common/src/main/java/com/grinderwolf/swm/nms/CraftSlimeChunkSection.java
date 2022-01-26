@@ -4,11 +4,10 @@ import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.ListTag;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class CraftSlimeChunkSection implements SlimeChunkSection {
 
     private final int sectionIndex;
@@ -22,8 +21,10 @@ public class CraftSlimeChunkSection implements SlimeChunkSection {
     private final long[] blockStates;
 
     // Post 1.17 block data
-    private final CompoundTag blockStatesTag;
-    private final CompoundTag biomeTag;
+    @Setter
+    private CompoundTag blockStatesTag;
+    @Setter
+    private CompoundTag biomeTag;
 
     private final NibbleArray blockLight;
     private final NibbleArray skyLight;

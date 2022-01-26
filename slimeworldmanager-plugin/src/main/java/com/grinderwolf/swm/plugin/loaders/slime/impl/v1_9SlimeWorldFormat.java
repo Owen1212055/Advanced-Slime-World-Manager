@@ -263,21 +263,21 @@ public class v1_9SlimeWorldFormat implements SlimeWorldReader {
                     // Biome array
                     int[] biomes = null;
 
-                    if (version == 8 && worldVersion < 0x08) {
+                    if (version == 8 && worldVersion < 0x04) {
                         // Patch the v8 bug: biome array size is wrong for old worlds
                         dataStream.readInt();
+                    }
 
-                        if (worldVersion < 0x04) {
-                            byte[] byteBiomes = new byte[256];
-                            dataStream.read(byteBiomes);
-                            biomes = toIntArray(byteBiomes);
-                        } else {
-                            int biomesArrayLength = version >= 8 ? dataStream.readInt() : 256;
-                            biomes = new int[biomesArrayLength];
+                    if (worldVersion < 0x04) {
+                        byte[] byteBiomes = new byte[256];
+                        dataStream.read(byteBiomes);
+                        biomes = toIntArray(byteBiomes);
+                    } else if (worldVersion < 0x08) {
+                        int biomesArrayLength = version >= 8 ? dataStream.readInt() : 256;
+                        biomes = new int[biomesArrayLength];
 
-                            for (int i = 0; i < biomes.length; i++) {
-                                biomes[i] = dataStream.readInt();
-                            }
+                        for (int i = 0; i < biomes.length; i++) {
+                            biomes[i] = dataStream.readInt();
                         }
                     }
 
@@ -367,7 +367,7 @@ public class v1_9SlimeWorldFormat implements SlimeWorldReader {
         dataStream.read(sectionBitmask);
         BitSet sectionBitset = BitSet.valueOf(sectionBitmask);
 
-        for (int i = 0; i < sectionBitset.size(); i++) {
+        for (int i = 0; i < 16; i++) {
             if (sectionBitset.get(i)) {
                 // Block Light Nibble Array
                 NibbleArray blockLightArray;
@@ -387,8 +387,8 @@ public class v1_9SlimeWorldFormat implements SlimeWorldReader {
                 ListTag<CompoundTag> paletteTag = null;
                 long[] blockStatesArray = null;
 
-                CompoundTag blockStateTag = null;
-                CompoundTag biomeTag = null;
+                byte[] rawBlockStates = null;
+                byte[] rawBiomes = null;
 
                 if (worldVersion < 0x04) {
                     blockArray = new byte[4096];
@@ -422,7 +422,10 @@ public class v1_9SlimeWorldFormat implements SlimeWorldReader {
                         blockStatesArray[index] = dataStream.readLong();
                     }
                 } else {
-                    throw new RuntimeException();
+                    rawBlockStates = new byte[dataStream.readInt()];
+                    dataStream.read(rawBlockStates);
+                    rawBiomes = new byte[dataStream.readInt()];
+                    dataStream.read(rawBiomes);
                 }
 
                 // Sky Light Nibble Array
@@ -442,7 +445,7 @@ public class v1_9SlimeWorldFormat implements SlimeWorldReader {
                     dataStream.skip(hypixelBlocksLength);
                 }
 
-                chunkSectionArray[i] = new CraftSlimeChunkSection(i, blockArray, dataArray, paletteTag, blockStatesArray, blockStateTag, biomeTag, blockLightArray, skyLightArray);
+                chunkSectionArray[i] = new CraftSlimeChunkSection(i, blockArray, dataArray, paletteTag, blockStatesArray,null, null, blockLightArray, skyLightArray);
             }
         }
 
